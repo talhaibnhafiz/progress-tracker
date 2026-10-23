@@ -352,6 +352,156 @@
       text-align: center;
     }
 
+/* ===== CHAT FEATURE ===== */
+.chat-panel {
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid #283543;
+  border-radius: 12px;
+  background: #141a1f;
+}
+
+.chat-panel h3 {
+  color: #00ff88;
+  font-size: 17px;
+  margin-bottom: 12px;
+}
+
+.chat-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.chat-tabs button,
+.chat-action {
+  background: #1c252e;
+  color: #e0e0e0;
+  border: 1px solid #283543;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chat-tabs button.active,
+.chat-action.primary {
+  background: #00ff88;
+  color: #0b0f12;
+  border-color: #00ff88;
+  font-weight: 700;
+}
+
+.chat-search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.chat-search input,
+.chat-compose input {
+  min-width: 0;
+  flex: 1;
+  background: #0b0f12;
+  color: #fff;
+  border: 1px solid #283543;
+  padding: 10px;
+  border-radius: 8px;
+  outline: none;
+}
+
+.chat-search input:focus,
+.chat-compose input:focus {
+  border-color: #00ff88;
+}
+
+.chat-status {
+  color: #9aa5b1;
+  font-size: 12px;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+.chat-messages {
+  height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  background: #0b0f12;
+  border: 1px solid #283543;
+  border-radius: 8px;
+}
+
+.chat-message {
+  max-width: 92%;
+  align-self: flex-start;
+  background: #1c252e;
+  border: 1px solid #283543;
+  border-radius: 10px;
+  padding: 9px 11px;
+  overflow-wrap: anywhere;
+}
+
+.chat-message.mine {
+  align-self: flex-end;
+  border-color: rgba(0, 255, 136, .35);
+}
+
+.chat-message-head {
+  color: #00ff88;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.chat-message-text {
+  color: #e0e0e0;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-unsend {
+  display: block;
+  margin-top: 7px;
+  color: #ff7777;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.chat-compose {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chat-empty {
+  color: #9aa5b1;
+  font-size: 13px;
+  text-align: center;
+  margin: auto;
+}
+
+@media (max-width: 420px) {
+  .chat-panel {
+    padding: 11px;
+  }
+
+  .chat-tabs button,
+  .chat-action {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .chat-compose,
+  .chat-search {
+    gap: 5px;
+  }
+}
+
     .hidden {
       display: none;
     }
@@ -377,6 +527,63 @@
         <span id="user-name">Welcome User</span>
         <button class="btn-logout" onclick="logout()">Logout</button>
       </div>
+
+      <!-- ===== WORLD & DIRECT CHAT ===== -->
+      <section class="chat-panel" id="chatPanel">
+        <h3>💬 GoalFlow Community Chat</h3>
+
+        <div class="chat-status">
+          Your username: <strong id="myChatUsername">Loading...</strong>
+        </div>
+
+        <div class="chat-tabs">
+          <button type="button" id="worldChatTab" class="active">
+            World Chat
+          </button>
+          <button type="button" id="directChatTab">
+            Direct Chat
+          </button>
+        </div>
+
+        <div id="directSearchArea" class="hidden">
+          <div class="chat-search">
+            <input
+              id="chatUsernameInput"
+              type="text"
+              maxlength="80"
+              placeholder="Enter someone's username"
+              autocomplete="off"
+            >
+            <button type="button" id="openDirectChat" class="chat-action primary">
+              Open
+            </button>
+          </div>
+          <div class="chat-status">
+            Search by the exact generated username.
+          </div>
+        </div>
+
+        <div id="chatStatus" class="chat-status" role="status">
+          Loading chat...
+        </div>
+
+        <div id="chatMessages" class="chat-messages" aria-live="polite">
+          <p class="chat-empty">Loading messages...</p>
+        </div>
+
+        <form id="chatComposeForm" class="chat-compose">
+          <input
+            id="chatMessageInput"
+            type="text"
+            maxlength="1000"
+            placeholder="Write a message..."
+            autocomplete="off"
+            required
+          >
+          <button type="submit" class="chat-action primary">Send</button>
+        </form>
+      </section>
+      <!-- ===== END CHAT ===== -->
 
       <!-- Gamification & Stats -->
       <div class="gamify-box">
@@ -430,7 +637,23 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+ 
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  addDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  serverTimestamp,
+  runTransaction
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 
     const firebaseConfig = {
       apiKey: "AIzaSyA7K42WBzWBAKRfWdZPJ2W_i4smbVtN9T0",
@@ -625,6 +848,421 @@
         }
       });
     }
+    
+    // ===== CHAT FEATURE LOGIC =====
+
+    let myChatProfile = null;
+    let activeChatType = "world";
+    let activeConversationId = null;
+    let stopWorldMessages = null;
+    let stopDirectMessages = null;
+    let stopWorldProfile = null;
+    let stopDirectProfile = null;
+    let chatBusy = false;
+
+    const chatMessagesEl = document.getElementById("chatMessages");
+    const chatStatusEl = document.getElementById("chatStatus");
+    const chatInputEl = document.getElementById("chatMessageInput");
+    const chatUsernameInputEl = document.getElementById("chatUsernameInput");
+    const directSearchAreaEl = document.getElementById("directSearchArea");
+    const worldChatTabEl = document.getElementById("worldChatTab");
+    const directChatTabEl = document.getElementById("directChatTab");
+
+    function chatStatus(message) {
+      chatStatusEl.textContent = message;
+    }
+
+    function stopChatListeners() {
+      if (stopWorldMessages) stopWorldMessages();
+      if (stopDirectMessages) stopDirectMessages();
+      if (stopWorldProfile) stopWorldProfile();
+      if (stopDirectProfile) stopDirectProfile();
+
+      stopWorldMessages = null;
+      stopDirectMessages = null;
+      stopWorldProfile = null;
+      stopDirectProfile = null;
+    }
+
+    function showChatMessage(message) {
+      chatMessagesEl.replaceChildren();
+      const p = document.createElement("p");
+      p.className = "chat-empty";
+      p.textContent = message;
+      chatMessagesEl.appendChild(p);
+    }
+
+    function renderChatMessages(snapshot) {
+      chatMessagesEl.replaceChildren();
+
+      if (snapshot.empty) {
+        showChatMessage("No messages yet. Start the conversation!");
+        return;
+      }
+
+      snapshot.forEach((messageDoc) => {
+        const message = messageDoc.data();
+
+        const card = document.createElement("article");
+        card.className = "chat-message";
+        if (message.senderUid === currentUser?.uid) {
+          card.classList.add("mine");
+        }
+
+        const heading = document.createElement("div");
+        heading.className = "chat-message-head";
+        heading.textContent =
+          (message.username || "User") +
+          (message.senderUid === currentUser?.uid ? " · You" : "");
+
+        const body = document.createElement("div");
+        body.className = "chat-message-text";
+        body.textContent = message.text || "";
+
+        card.append(heading, body);
+
+        if (message.senderUid === currentUser?.uid) {
+          const unsendButton = document.createElement("button");
+          unsendButton.type = "button";
+          unsendButton.className = "chat-unsend";
+          unsendButton.textContent = "Unsend message";
+
+          unsendButton.addEventListener("click", async () => {
+            if (!currentUser) return;
+            if (!confirm("Unsend this message for everyone?")) return;
+
+            try {
+              const messageRef = activeChatType === "world"
+                ? doc(db, "worldMessages", messageDoc.id)
+                : doc(
+                    db,
+                    "conversations",
+                    activeConversationId,
+                    "messages",
+                    messageDoc.id
+                  );
+
+              await deleteDoc(messageRef);
+            } catch (error) {
+              console.error(error);
+              alert("Could not unsend the message. Please try again.");
+            }
+          });
+
+          card.appendChild(unsendButton);
+        }
+
+        chatMessagesEl.appendChild(card);
+      });
+
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    }
+
+    async function ensureChatProfile(user) {
+      const profileRef = doc(db, "publicProfiles", user.uid);
+      const existingProfile = await getDoc(profileRef);
+
+      if (existingProfile.exists()) {
+        myChatProfile = existingProfile.data();
+        document.getElementById("myChatUsername").textContent =
+          "@" + myChatProfile.username;
+        return;
+      }
+
+      // Unique generated username: readable name + Firebase UID suffix.
+      const baseName = (user.displayName || "user")
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 20) || "user";
+
+      // The full UID suffix avoids ordinary username collisions.
+      const username = `${baseName}_${user.uid.toLowerCase()}`;
+      const usernameRef = doc(db, "usernames", username);
+
+      await runTransaction(db, async (transaction) => {
+        const profileSnap = await transaction.get(profileRef);
+        if (profileSnap.exists()) return;
+
+        const usernameSnap = await transaction.get(usernameRef);
+        if (usernameSnap.exists() &&
+            usernameSnap.data().uid !== user.uid) {
+          throw new Error("Generated username is already taken. Please retry.");
+        }
+
+        transaction.set(usernameRef, { uid: user.uid });
+
+        transaction.set(profileRef, {
+          uid: user.uid,
+          username,
+          displayName: (user.displayName || "User").slice(0, 80),
+          createdAt: serverTimestamp()
+        });
+      });
+
+      const finalProfile = await getDoc(profileRef);
+      if (!finalProfile.exists()) {
+        throw new Error("Could not create your chat profile.");
+      }
+
+      myChatProfile = finalProfile.data();
+      document.getElementById("myChatUsername").textContent =
+        "@" + myChatProfile.username;
+    }
+
+    function startWorldChat() {
+      stopChatListeners();
+
+      activeChatType = "world";
+      activeConversationId = null;
+      worldChatTabEl.classList.add("active");
+      directChatTabEl.classList.remove("active");
+      directSearchAreaEl.classList.add("hidden");
+      chatInputEl.placeholder = "Message everyone...";
+      chatInputEl.disabled = false;
+      chatStatus("World Chat · Messages are visible to signed-in users.");
+      showChatMessage("Loading world messages...");
+
+      const messagesQuery = query(
+        collection(db, "worldMessages"),
+        orderBy("createdAt", "asc"),
+        limit(100)
+      );
+
+      stopWorldMessages = onSnapshot(
+        messagesQuery,
+        renderChatMessages,
+        (error) => {
+          console.error(error);
+          chatStatus("Could not load World Chat. Check Firestore rules.");
+          showChatMessage("Chat is currently unavailable.");
+        }
+      );
+    }
+
+    async function openDirectChat() {
+      if (!currentUser || !myChatProfile) return;
+
+      const targetUsername = chatUsernameInputEl.value
+        .trim()
+        .toLowerCase();
+
+      if (!targetUsername) {
+        chatStatus("Enter a username first.");
+        return;
+      }
+
+      if (targetUsername === myChatProfile.username) {
+        chatStatus("That is your own username.");
+        return;
+      }
+
+      stopChatListeners();
+      chatStatus("Looking up username...");
+      showChatMessage("Opening direct chat...");
+
+      try {
+        const usernameSnap = await getDoc(
+          doc(db, "usernames", targetUsername)
+        );
+
+        if (!usernameSnap.exists()) {
+          chatStatus("Username not found. Check the spelling.");
+          showChatMessage("No conversation opened.");
+          return;
+        }
+
+        const targetUid = usernameSnap.data().uid;
+        if (!targetUid || targetUid === currentUser.uid) {
+          chatStatus("Invalid username.");
+          return;
+        }
+
+        const targetProfileSnap = await getDoc(
+          doc(db, "publicProfiles", targetUid)
+        );
+
+        if (!targetProfileSnap.exists()) {
+          chatStatus("That user's public profile is unavailable.");
+          return;
+        }
+
+        const memberUids = [currentUser.uid, targetUid].sort();
+        const conversationId = memberUids.join("__");
+        const conversationRef = doc(
+          db,
+          "conversations",
+          conversationId
+        );
+
+        await runTransaction(db, async (transaction) => {
+          const conversationSnap = await transaction.get(conversationRef);
+
+          if (!conversationSnap.exists()) {
+            transaction.set(conversationRef, {
+              memberUids,
+              createdBy: currentUser.uid,
+              createdAt: serverTimestamp()
+            });
+          } else {
+            const existing = conversationSnap.data();
+            if (!Array.isArray(existing.memberUids) ||
+                existing.memberUids.length !== 2 ||
+                !memberUids.every(uid => existing.memberUids.includes(uid))) {
+              throw new Error("Conversation membership mismatch.");
+            }
+          }
+        });
+
+        activeChatType = "direct";
+        activeConversationId = conversationId;
+        worldChatTabEl.classList.remove("active");
+        directChatTabEl.classList.add("active");
+        directSearchAreaEl.classList.remove("hidden");
+        chatInputEl.placeholder =
+          "Message @" + targetProfileSnap.data().username + "...";
+        chatInputEl.disabled = false;
+        chatStatus("Direct Chat · @" + targetProfileSnap.data().username);
+        showChatMessage("Loading direct messages...");
+
+        const messagesQuery = query(
+          collection(db, "conversations", conversationId, "messages"),
+          orderBy("createdAt", "asc"),
+          limit(100)
+        );
+
+        stopDirectMessages = onSnapshot(
+          messagesQuery,
+          renderChatMessages,
+          (error) => {
+            console.error(error);
+            chatStatus("Could not load this direct chat. Check Firestore rules.");
+            showChatMessage("Chat is currently unavailable.");
+          }
+        );
+      } catch (error) {
+        console.error(error);
+        chatStatus("Could not open direct chat: " + error.message);
+        showChatMessage("Please check your connection and try again.");
+      }
+    }
+
+    worldChatTabEl.addEventListener("click", () => {
+      if (currentUser) startWorldChat();
+    });
+
+    directChatTabEl.addEventListener("click", () => {
+      if (!currentUser) return;
+
+      stopChatListeners();
+      activeChatType = "direct";
+      activeConversationId = null;
+      worldChatTabEl.classList.remove("active");
+      directChatTabEl.classList.add("active");
+      directSearchAreaEl.classList.remove("hidden");
+      chatInputEl.placeholder = "Open a direct chat first...";
+      chatInputEl.disabled = true;
+      chatStatus("Enter the exact username of the person you want to message.");
+      showChatMessage("Search for a username to open a private chat.");
+      chatUsernameInputEl.focus();
+    });
+
+    document.getElementById("openDirectChat").addEventListener(
+      "click",
+      openDirectChat
+    );
+
+    chatUsernameInputEl.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        openDirectChat();
+      }
+    });
+
+    document.getElementById("chatComposeForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        if (!currentUser || !myChatProfile || chatBusy) return;
+
+        const text = chatInputEl.value.trim();
+        if (!text) return;
+
+        if (text.length > 1000) {
+          chatStatus("Messages must be 1000 characters or fewer.");
+          return;
+        }
+
+        if (activeChatType === "direct" && !activeConversationId) {
+          chatStatus("Open a direct chat before sending a message.");
+          return;
+        }
+
+        chatBusy = true;
+
+        try {
+          const messageData = {
+            senderUid: currentUser.uid,
+            username: myChatProfile.username,
+            text,
+            createdAt: serverTimestamp()
+          };
+
+          if (activeChatType === "world") {
+            await addDoc(
+              collection(db, "worldMessages"),
+              messageData
+            );
+          } else {
+            await addDoc(
+              collection(
+                db,
+                "conversations",
+                activeConversationId,
+                "messages"
+              ),
+              messageData
+            );
+          }
+
+          chatInputEl.value = "";
+        } catch (error) {
+          console.error(error);
+          chatStatus("Message not sent. Check your Firestore rules.");
+        } finally {
+          chatBusy = false;
+        }
+      }
+    );
+
+    // Set up profile and chat after Google login.
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        stopChatListeners();
+        myChatProfile = null;
+        activeConversationId = null;
+        chatInputEl.disabled = false;
+        document.getElementById("myChatUsername").textContent = "Sign in first";
+        showChatMessage("Sign in with Google to use chat.");
+        chatStatus("Chat is available to signed-in users only.");
+        return;
+      }
+
+      try {
+        await ensureChatProfile(user);
+        startWorldChat();
+      } catch (error) {
+        console.error(error);
+        chatStatus("Could not initialize your chat profile.");
+        showChatMessage("Please reload the page and try again.");
+      }
+    });
+
+    // ===== END CHAT FEATURE =====
+
   </script>
 </body>
 </html>
