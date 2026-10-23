@@ -1,0 +1,451 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress Tracker - MD TALHA IBN HAFIZ</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0b0f12;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 480px;
+      width: 100%;
+      background: #141a1f;
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid #1f2933;
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.05);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header h2 {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .creator-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #00ff88;
+      background: rgba(0, 255, 136, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .auth-section {
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    .auth-section p {
+      color: #9aa5b1;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .btn-google {
+      background: #00ff88;
+      color: #0b0f12;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.2);
+    }
+
+    .btn-google:hover {
+      background: #00cc6a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 255, 136, 0.3);
+    }
+
+    .profile-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1c252e;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #283543;
+    }
+
+    .profile-bar span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00ff88;
+    }
+
+    .btn-logout {
+      background: transparent;
+      color: #ff5252;
+      border: 1px solid rgba(255, 82, 82, 0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(255, 82, 82, 0.1);
+    }
+
+    .date-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      background: #1c252e;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid #283543;
+    }
+
+    .date-box label {
+      font-size: 13px;
+      color: #9aa5b1;
+      font-weight: 600;
+    }
+
+    .date-box input[type="date"] {
+      background: #0b0f12;
+      color: #00ff88;
+      border: 1px solid #00ff88;
+      padding: 6px 10px;
+      border-radius: 6px;
+      outline: none;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .progress-section {
+      margin-bottom: 20px;
+    }
+
+    .progress-bg {
+      background: #1c252e;
+      border-radius: 12px;
+      height: 14px;
+      width: 100%;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border: 1px solid #283543;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #00cc6a, #00ff88);
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    .stats-text {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #7b8895;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .input-group input {
+      flex: 1;
+      background: #1c252e;
+      border: 1px solid #283543;
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: #00ff88;
+    }
+
+    .btn-add {
+      background: #00ff88;
+      color: #0b0f12;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .btn-add:hover {
+      background: #00cc6a;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      background: #1c252e;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #283543;
+      transition: all 0.2s;
+    }
+
+    li:hover {
+      border-color: rgba(0, 255, 136, 0.3);
+    }
+
+    li.done {
+      opacity: 0.5;
+    }
+
+    li.done span {
+      text-decoration: line-through;
+      color: #7b8895;
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .task-left input[type="checkbox"] {
+      accent-color: #00ff88;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .task-left span {
+      font-size: 14px;
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+
+    .btn-del {
+      background: transparent;
+      color: #ff5252;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+
+    .btn-del:hover {
+      color: #ff1a1a;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h2>Goal & Progress Tracker</h2>
+      <div class="creator-badge">Created by MD TALHA IBN HAFIZ</div>
+    </div>
+
+    <!-- Login Area -->
+    <div id="login-box" class="auth-section">
+      <p>Sign in with Google to manage your personal targets</p>
+      <button class="btn-google" onclick="loginWithGoogle()">Sign in with Google</button>
+    </div>
+
+    <!-- Main Dashboard Area -->
+    <div id="app-box" class="hidden">
+      <div class="profile-bar">
+        <span id="user-name">Welcome User</span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="date-box">
+        <label for="taskDate">Select Date:</label>
+        <input type="date" id="taskDate" onchange="loadTasks()">
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-bg">
+          <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div class="stats-text" id="statsText">0% Completed</div>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Enter new task here...">
+        <button class="btn-add" onclick="addTask()">Add Task</button>
+      </div>
+
+      <ul id="taskList"></ul>
+    </div>
+  </div>
+
+  <!-- Firebase Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7K42WBzWBAKRfWdZPJ2W_i4smbVtN9T0",
+      authDomain: "my-project-tracker-3e7ca.firebaseapp.com",
+      projectId: "my-project-tracker-3e7ca",
+      storageBucket: "my-project-tracker-3e7ca.firebasestorage.app",
+      messagingSenderId: "1090393183788",
+      appId: "1:1090393183788:web:ec609592f8f2061fdee389",
+      measurementId: "G-629WCSP2TT"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null;
+    let userTasks = {};
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('taskDate').value = todayStr;
+
+    window.loginWithGoogle = () => {
+      signInWithPopup(auth, provider).catch(error => alert(error.message));
+    };
+
+    window.logout = () => {
+      signOut(auth);
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('user-name').innerText = `👤 ${user.displayName}`;
+        document.getElementById('login-box').classList.add('hidden');
+        document.getElementById('app-box').classList.remove('hidden');
+        await fetchUserData();
+        loadTasks();
+      } else {
+        currentUser = null;
+        document.getElementById('login-box').classList.remove('hidden');
+        document.getElementById('app-box').classList.add('hidden');
+      }
+    });
+
+    async function fetchUserData() {
+      if(!currentUser) return;
+      const userRef = doc(db, "users", currentUser.uid);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        userTasks = docSnap.data().tasks || {};
+      } else {
+        userTasks = {};
+      }
+    }
+
+    async function saveUserData() {
+      if(!currentUser) return;
+      const userRef = doc(db, "users", currentUser.uid);
+      await setDoc(userRef, { tasks: userTasks }, { merge: true });
+    }
+
+    window.loadTasks = () => {
+      const selectedDate = document.getElementById('taskDate').value || todayStr;
+      const tasks = userTasks[selectedDate] || [];
+      const list = document.getElementById('taskList');
+      list.innerHTML = '';
+
+      let completedCount = 0;
+      if (Array.isArray(tasks)) {
+        tasks.forEach((task, index) => {
+          if(task.completed) completedCount++;
+          const li = document.createElement('li');
+          if(task.completed) li.classList.add('done');
+          li.innerHTML = `
+            <div class="task-left">
+              <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
+              <span>${task.text}</span>
+            </div>
+            <button class="btn-del" onclick="deleteTask(${index})">✕</button>
+          `;
+          list.appendChild(li);
+        });
+      }
+
+      const total = tasks.length || 0;
+      const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('statsText').innerText = `${percent}% Completed (${completedCount}/${total})`;
+    };
+
+    window.addTask = async () => {
+      const input = document.getElementById('taskInput');
+      if(input.value.trim() === '') return;
+      const selectedDate = document.getElementById('taskDate').value || todayStr;
+      if(!userTasks[selectedDate]) userTasks[selectedDate] = [];
+      userTasks[selectedDate].push({ text: input.value, completed: false });
+      input.value = '';
+      loadTasks();
+      await saveUserData();
+    };
+
+    window.toggleTask = async (index) => {
+      const selectedDate = document.getElementById('taskDate').value || todayStr;
+      userTasks[selectedDate][index].completed = !userTasks[selectedDate][index].completed;
+      loadTasks();
+      await saveUserData();
+    };
+
+    window.deleteTask = async (index) => {
+      const selectedDate = document.getElementById('taskDate').value || todayStr;
+      userTasks[selectedDate].splice(index, 1);
+      loadTasks();
+      await saveUserData();
+    };
+  </script>
+</body>
+</html>
