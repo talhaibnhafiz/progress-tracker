@@ -1,9 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Progress Tracker - MD TALHA IBN HAFIZ</title>
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -23,10 +25,10 @@
     }
 
     .container {
-      max-width: 480px;
+      max-width: 520px;
       width: 100%;
       background: #141a1f;
-      padding: 30px;
+      padding: 25px;
       border-radius: 16px;
       border: 1px solid #1f2933;
       box-shadow: 0 10px 30px rgba(0, 255, 136, 0.05);
@@ -34,7 +36,7 @@
 
     .header {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .header h2 {
@@ -47,7 +49,7 @@
 
     .creator-badge {
       display: inline-block;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: #00ff88;
       background: rgba(0, 255, 136, 0.1);
@@ -95,7 +97,7 @@
       background: #1c252e;
       padding: 12px 16px;
       border-radius: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       border: 1px solid #283543;
     }
 
@@ -121,11 +123,42 @@
       background: rgba(255, 82, 82, 0.1);
     }
 
+    /* Gamification Section */
+    .gamify-box {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: #1c252e;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #283543;
+      text-align: center;
+    }
+
+    .stat-card .label {
+      font-size: 11px;
+      color: #9aa5b1;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .stat-card .value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #00ff88;
+      margin-top: 4px;
+    }
+
     .date-box {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       background: #1c252e;
       padding: 12px 16px;
       border-radius: 10px;
@@ -159,7 +192,7 @@
       height: 14px;
       width: 100%;
       overflow: hidden;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       border: 1px solid #283543;
     }
 
@@ -173,30 +206,48 @@
 
     .stats-text {
       text-align: center;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #7b8895;
     }
 
-    .input-group {
+    /* Category & Input Group */
+    .input-wrapper {
       display: flex;
+      flex-direction: column;
       gap: 10px;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
-    .input-group input {
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    select.category-select {
+      background: #1c252e;
+      border: 1px solid #283543;
+      color: #00ff88;
+      padding: 10px;
+      border-radius: 8px;
+      outline: none;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .input-row input {
       flex: 1;
       background: #1c252e;
       border: 1px solid #283543;
       color: #ffffff;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-radius: 8px;
       outline: none;
       font-size: 14px;
       transition: border-color 0.2s;
     }
 
-    .input-group input:focus {
+    .input-row input:focus {
       border-color: #00ff88;
     }
 
@@ -204,7 +255,7 @@
       background: #00ff88;
       color: #0b0f12;
       border: none;
-      padding: 12px 20px;
+      padding: 10px 18px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 700;
@@ -218,12 +269,13 @@
 
     ul {
       list-style: none;
+      margin-bottom: 25px;
     }
 
     li {
       background: #1c252e;
-      padding: 14px 16px;
-      margin-bottom: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -240,7 +292,7 @@
       opacity: 0.5;
     }
 
-    li.done span {
+    li.done span.task-text {
       text-decoration: line-through;
       color: #7b8895;
     }
@@ -248,35 +300,56 @@
     .task-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .task-left input[type="checkbox"] {
       accent-color: #00ff88;
-      width: 18px;
-      height: 18px;
+      width: 17px;
+      height: 17px;
       cursor: pointer;
     }
 
-    .task-left span {
-      font-size: 14px;
-      color: #e0e0e0;
-      font-weight: 500;
+    .tag-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
     }
+
+    .tag-study { background: rgba(66, 133, 244, 0.2); color: #4285F4; border: 1px solid rgba(66, 133, 244, 0.3); }
+    .tag-workout { background: rgba(234, 67, 53, 0.2); color: #EA4335; border: 1px solid rgba(234, 67, 53, 0.3); }
+    .tag-coding { background: rgba(251, 188, 5, 0.2); color: #FBBC05; border: 1px solid rgba(251, 188, 5, 0.3); }
+    .tag-personal { background: rgba(52, 168, 83, 0.2); color: #34A853; border: 1px solid rgba(52, 168, 83, 0.3); }
 
     .btn-del {
       background: transparent;
       color: #ff5252;
       border: none;
-      font-size: 16px;
+      font-size: 15px;
       cursor: pointer;
       padding: 2px 6px;
-      border-radius: 4px;
-      transition: color 0.2s;
     }
 
     .btn-del:hover {
       color: #ff1a1a;
+    }
+
+    /* Analytics Chart Container */
+    .chart-box {
+      background: #1c252e;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #283543;
+      margin-top: 15px;
+    }
+
+    .chart-box h4 {
+      font-size: 13px;
+      color: #9aa5b1;
+      margin-bottom: 10px;
+      text-align: center;
     }
 
     .hidden {
@@ -305,6 +378,18 @@
         <button class="btn-logout" onclick="logout()">Logout</button>
       </div>
 
+      <!-- Gamification & Stats -->
+      <div class="gamify-box">
+        <div class="stat-card">
+          <div class="label">Streak</div>
+          <div class="value" id="streakVal">🔥 0 Days</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Badge</div>
+          <div class="value" id="badgeVal">🥉 Bronze</div>
+        </div>
+      </div>
+
       <div class="date-box">
         <label for="taskDate">Select Date:</label>
         <input type="date" id="taskDate" onchange="loadTasks()">
@@ -317,12 +402,27 @@
         <div class="stats-text" id="statsText">0% Completed</div>
       </div>
 
-      <div class="input-group">
-        <input type="text" id="taskInput" placeholder="Enter new task here...">
-        <button class="btn-add" onclick="addTask()">Add Task</button>
+      <!-- Category + Task Input -->
+      <div class="input-wrapper">
+        <div class="input-row">
+          <select id="taskCategory" class="category-select">
+            <option value="Study">📚 Study</option>
+            <option value="Workout">🏋️ Workout</option>
+            <option value="Coding">💻 Coding</option>
+            <option value="Personal">⚙️ Personal</option>
+          </select>
+          <input type="text" id="taskInput" placeholder="Enter new task here...">
+          <button class="btn-add" onclick="addTask()">Add Task</button>
+        </div>
       </div>
 
       <ul id="taskList"></ul>
+
+      <!-- Weekly Analytics Chart -->
+      <div class="chart-box">
+        <h4>📊 Weekly Completion Trend (%)</h4>
+        <canvas id="progressChart"></canvas>
+      </div>
     </div>
   </div>
 
@@ -349,6 +449,7 @@
 
     let currentUser = null;
     let userTasks = {};
+    let myChart = null;
 
     const todayStr = new Date().toISOString().split('T')[0];
     document.getElementById('taskDate').value = todayStr;
@@ -405,10 +506,14 @@
           if(task.completed) completedCount++;
           const li = document.createElement('li');
           if(task.completed) li.classList.add('done');
+          
+          const tagClass = `tag-${(task.category || 'personal').toLowerCase()}`;
+          
           li.innerHTML = `
             <div class="task-left">
               <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
-              <span>${task.text}</span>
+              <span class="tag-badge ${tagClass}">${task.category || 'Personal'}</span>
+              <span class="task-text">${task.text}</span>
             </div>
             <button class="btn-del" onclick="deleteTask(${index})">✕</button>
           `;
@@ -420,14 +525,18 @@
       const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
       document.getElementById('progressBar').style.width = percent + '%';
       document.getElementById('statsText').innerText = `${percent}% Completed (${completedCount}/${total})`;
+
+      updateStreakAndBadges();
+      renderAnalyticsChart();
     };
 
     window.addTask = async () => {
       const input = document.getElementById('taskInput');
+      const category = document.getElementById('taskCategory').value;
       if(input.value.trim() === '') return;
       const selectedDate = document.getElementById('taskDate').value || todayStr;
       if(!userTasks[selectedDate]) userTasks[selectedDate] = [];
-      userTasks[selectedDate].push({ text: input.value, completed: false });
+      userTasks[selectedDate].push({ text: input.value, category: category, completed: false });
       input.value = '';
       loadTasks();
       await saveUserData();
@@ -446,6 +555,76 @@
       loadTasks();
       await saveUserData();
     };
+
+    function updateStreakAndBadges() {
+      let streak = 0;
+      let totalCompletedDays = 0;
+
+      const dates = Object.keys(userTasks).sort();
+      dates.forEach(d => {
+        const dayTasks = userTasks[d];
+        if (dayTasks.length > 0 && dayTasks.every(t => t.completed)) {
+          streak++;
+          totalCompletedDays++;
+        } else if (dayTasks.length > 0) {
+          streak = 0;
+        }
+      });
+
+      document.getElementById('streakVal').innerText = `🔥 ${streak} Days`;
+
+      let badge = "🥉 Bronze";
+      if (totalCompletedDays >= 30) badge = "💎 Diamond";
+      else if (totalCompletedDays >= 15) badge = "🥇 Gold";
+      else if (totalCompletedDays >= 7) badge = "🥈 Silver";
+
+      document.getElementById('badgeVal').innerText = badge;
+    }
+
+    function renderAnalyticsChart() {
+      const ctx = document.getElementById('progressChart').getContext('2d');
+      const last7Days = [];
+      const percents = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        last7Days.push(dateStr.slice(5)); // MM-DD
+
+        const tasks = userTasks[dateStr] || [];
+        if (tasks.length === 0) {
+          percents.push(0);
+        } else {
+          const comp = tasks.filter(t => t.completed).length;
+          percents.push(Math.round((comp / tasks.length) * 100));
+        }
+      }
+
+      if (myChart) myChart.destroy();
+
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: last7Days,
+          datasets: [{
+            label: 'Completion %',
+            data: percents,
+            borderColor: '#00ff88',
+            backgroundColor: 'rgba(0, 255, 136, 0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          scales: {
+            y: { min: 0, max: 100, ticks: { color: '#9aa5b1' }, grid: { color: '#283543' } },
+            x: { ticks: { color: '#9aa5b1' }, grid: { color: '#283543' } }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
   </script>
 </body>
 </html>
